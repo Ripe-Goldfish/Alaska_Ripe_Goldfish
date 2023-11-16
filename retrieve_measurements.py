@@ -12,6 +12,7 @@ from GMeasurements.measurements import RipeAtlasMeasurements
 import json
 from requests import get
 from datetime import datetime
+import csv
 
 def get_geolocation_info(ip):
     response = get(f"http://ip-api.com/json/{ip}?fields=status,message,countryCode,city,lat,lon,isp,reverse,hosting")
@@ -160,7 +161,7 @@ def retrieve_traceroute_measurement(msm_id): # ONLY WORKS FOR ONE-OFF TRACEROUTE
 
     formatted_measurement = format_traceroute_result(result=retrieved_measurement)
 
-    with open(file=f"data/measurement_results/traceroute-{msm_id}.json", mode='w') as f:
+    with open(file=f"data/traceroute_measurement_results/{msm_id}.json", mode='w') as f:
         json.dump(formatted_measurement, f, indent=4)
 
 
@@ -170,7 +171,7 @@ def retrieve_ping_measurement(msm_id): # WORKS FOR BOTH ONE-OFF AND ONGOING PING
 
     formatted_measurement = format_ping_result(result=retrieved_measurement)
 
-    with open(file=f"data/measurement_results/ping-{msm_id}.json", mode='w') as f:
+    with open(file=f"data/ping_measurement_results/{msm_id}.json", mode='w') as f:
         json.dump(formatted_measurement, f, indent=4)
 
 
@@ -178,8 +179,25 @@ def retrieve_ping_measurement(msm_id): # WORKS FOR BOTH ONE-OFF AND ONGOING PING
 if __name__ == "__main__":
     traceroute_old_msm_ids = [61984619, 61984618, 61984617, 61984615,61984614]
     traceroute_new_msm_ids = []
+    with open('data/measurements/traceroute_measurements.csv', newline='',) as f:
+        reader = csv.reader(f)
+        for row in reader:
+            traceroute_new_msm_ids.extend([int(num) for num in row])
+
     ping_old_ongoing_msm_ids = [63466931,63466932,63466933,63466934,63466935,63466936,63466937,63466938,63466939,63466940]
     ping_new_ongoing_msm_ids = []
+    with open('data/measurements/ping_measurements.csv', newline='',) as f:
+        reader = csv.reader(f)
+        for row in reader:
+            ping_new_ongoing_msm_ids.extend([int(num) for num in row])
 
-    # retrieve_traceroute_measurement(traceroute_msm_ids[0])
-    retrieve_ping_measurement(ping_old_ongoing_msm_ids[1])
+
+    # RUN THIS WHEN READY TO RETRIEVE THE MEASUREMENTS
+    
+    # RETRIEVE NEW PING MEASUREMENTS
+    for msm_id in ping_old_ongoing_msm_ids:
+        retrieve_ping_measurement(msm_id)
+
+    # RETRIEVE NEW TRACEROUTE MEASUREMENTS
+    for msm_id in traceroute_new_msm_ids:
+        retrieve_traceroute_measurement(msm_id)

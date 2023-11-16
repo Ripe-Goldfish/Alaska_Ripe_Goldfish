@@ -205,18 +205,24 @@ def create_oneoff_traceroute(auth_key):
         {"Anchorage" : 51310}
         ]
     
+    # all chosen probes/anchors are pingable
     destination_probes = [
-        {"Rio de Janeiro": 1000489}, 
-        {"New York City": 1006257},
-        {"Santiago de Chile":1004770},
-        {"Cape Town": 61453},
-        {"Lagos": 62927}, # not sure
-        {"Berlin":25697},
-        {"Moscow":1003584}, # not sure
-        {"Beijing":1005595}, # not sure
-        {"Tokyo":32783},
-        {"Sydney":1006760},
-        {"Delhi":1000689} # not sure
+        {"Sao Paulo": "200.160.6.19"}, # probe id 6410
+        {"Santiago de Chile": "200.1.122.55"}, # probe id 7065
+        {"Quito" : "143.255.248.149"}, # probe if 6488
+        {"New York City": "217.243.179.165"}, # probe id 6554
+        {"Montreal" : "206.162.189.131"}, # probe id 6498
+        {"Cape Town": "196.40.111.147"}, # probe id 7062
+        {"Nairobi": "196.6.220.42"}, # probe id 6882, Kenya IXP
+        {"Berlin": "62.154.179.86"}, # probe id 7075
+        {"Moscow": "193.232.226.58"}, # probe id 6733
+        {"Khabarovsk" : "185.209.84.141"}, # probe id 6936
+        {"Astana":"81.211.193.45"}, # probe id 6745
+        {"Tokyo": "202.214.97.16"}, # probe id 6425
+        {"Sydney": "119.17.170.244"}, # probe id 6427
+        {"Wellington" : "124.157.73.186"}, # probe id 7111
+        {"Delhi": "216.48.178.84"}, # probe id 7077
+        {"Singapore" : "185.28.221.65"} # probe id 6149
         ]
     
     for target in destination_probes:
@@ -236,7 +242,7 @@ def create_oneoff_traceroute(auth_key):
     value_str = ','.join([str(list(probe.values())[0]) for probe in alaska_probes])
     # Define your probe parameters
     probe_params = {
-        "requested": 1,  # Number of probes you request for the measurement
+        "requested": len(alaska_probes),  # Number of probes you request for the measurement
         "type": "probes",  # Type of the probe query (area, country, probes, etc.)
         "value": f"{value_str}"  # Area, country code, or list of probes
     }
@@ -262,12 +268,12 @@ if __name__ == "__main__":
         raise("error getting atlas api key")
     
     # LATEST OFFICIAL PING MEASUREMENT
-    create_ongoing_ping(auth_key=auth_key)
+    # create_ongoing_ping(auth_key=auth_key) # don't run this again
 
     # LATEST OFFICIAL TRACEROUTE MEASUREMENT
-    create_oneoff_traceroute(auth_key=auth_key)
+    create_oneoff_traceroute(auth_key=auth_key) # don't run this again
 
-    # DON'T RUN THIS FILE AGAIN
+
 
 
     
