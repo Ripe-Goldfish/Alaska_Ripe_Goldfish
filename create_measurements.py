@@ -196,9 +196,15 @@ def create_ongoing_ping(auth_key):
 def create_oneoff_traceroute(auth_key):
         # create an instance of class RipeAtlasMeasurement that can be used for a lot of different measurements
     measurement = RipeAtlasMeasurements(ATLAS_API_KEY=auth_key)
-
     new_payload = Payload()
-    alaska_probe = 51310
+
+    alaska_probes = [
+        {"Juneau" : 14300},
+        {"Eagle River" : 52344},
+        {"JBER" : 61868},
+        {"Anchorage" : 51310}
+        ]
+    
     destination_probes = [
         {"Rio de Janeiro": 1000489}, 
         {"New York City": 1006257},
@@ -214,24 +220,25 @@ def create_oneoff_traceroute(auth_key):
         ]
     
     for target in destination_probes:
-        (key,value) = target.items()
+        (key, value), = target.items()
         traceroute_params = {
-        "target": value,  # Target IP address or hostname to ping
-        "description": f"PROJECT GOLDFISH - testing Alaska network traffic, traceroute measurement from probe {alaska_probe} in Anchorage to probe {value} in {key}",
+        "target": value,  # Target IP address to do a traceroute to
+        "description": f"PROJECT GOLDFISH - testing Alaska network traffic, traceroute measurement from probes 14300, 52344, 61868, and 51310 in AK to probe {value} in {key}",
         "af": 4,  # Address family, 4 for IPv4, 6 for IPv6
         "type": "traceroute",
-        "include_probe_id": True,  # Whether to include the probe ID in the ping
-        "is_oneoff": True,  # If this is a one-time measurement
+        "is_oneoff": True  # If this is a one-time measurement
         }
 
-    # Add the ping definition to your payload
-    new_payload.add_traceroute_definition(**traceroute_params)
+        # Add the traceroute definition to your payload
+        new_payload.add_traceroute_definition(**traceroute_params)
 
+
+    value_str = ','.join([str(list(probe.values())[0]) for probe in alaska_probes])
     # Define your probe parameters
     probe_params = {
         "requested": 1,  # Number of probes you request for the measurement
         "type": "probes",  # Type of the probe query (area, country, probes, etc.)
-        "value": f"{alaska_probe}"  # Area, country code, or list of probes
+        "value": f"{value_str}"  # Area, country code, or list of probes
     }
 
     # Add the probe to your payload
@@ -255,10 +262,12 @@ if __name__ == "__main__":
         raise("error getting atlas api key")
     
     # LATEST OFFICIAL PING MEASUREMENT
-    # create_ongoing_ping(auth_key=auth_key)
+    create_ongoing_ping(auth_key=auth_key)
 
     # LATEST OFFICIAL TRACEROUTE MEASUREMENT
     create_oneoff_traceroute(auth_key=auth_key)
+
+    # DON'T RUN THIS FILE AGAIN
 
 
     

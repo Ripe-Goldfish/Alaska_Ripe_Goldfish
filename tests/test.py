@@ -57,7 +57,17 @@ from datetime import datetime
 # cdf.to_csv('./countries.csv',mode='w',index=False)
 # cdf.to_json('./countries.json',mode='w',index=False,indent=4)
 
-print(int(datetime(2023,11,9,20,41).timestamp()))
+# print(int(datetime(2023,11,9,20,41).timestamp()))
 
-target = {"Barrow":"24.237.124.4"}
-print(target.items())
+# target = {"Barrow":"24.237.124.4"}
+# print(target.items())
+
+alaska_probes = [
+    {"Juneau": 14300},
+    {"Eagle River": 52344},
+    {"JBER": 61868},
+    {"Anchorage": 51310}
+]
+
+value_str = ','.join([str(list(probe.values())[0]) for probe in alaska_probes])
+print(value_str)
