@@ -13,10 +13,11 @@ import json
 from requests import get
 from datetime import datetime
 import csv
+import time
 
 def get_geolocation_info(ip):
     response = get(f"http://ip-api.com/json/{ip}?fields=status,message,countryCode,city,lat,lon,isp,reverse,hosting")
-    print(response)
+    print(f"\t\t{ip} - {response}")
     # if we do more than 45 requests per minute, 429 too many requests is returned
     if response.status_code == 200:
         return response.json()
@@ -29,7 +30,8 @@ def format_traceroute_result(result:list):
     formatted_result = [] # list of probes used in this measurement
 
     # for each probe used, format the result
-    for probe in result:
+    for i,probe in enumerate(result):
+        print(f"\tworking on probe {i+1} of {len(result)}")
         new_probe = {} # 1
         new_probe["msm_id"] = probe["msm_id"] # unchanged, measurement id
         new_probe["prb_id"] = probe["prb_id"] # unchanged, probe id
@@ -129,8 +131,9 @@ def format_traceroute_result(result:list):
         
         # add new probe data to formatted_result["result"]
         formatted_result.append(new_probe) # end 1 - add new probe dict to formatted_result list
-        break
 
+        print("\twaiting for 30 seconds")
+        time.sleep(30) # because of the rate limiting using ip-api
 
     return formatted_result
 
@@ -159,20 +162,25 @@ def retrieve_traceroute_measurement(msm_id): # ONLY WORKS FOR ONE-OFF TRACEROUTE
     measurement = RipeAtlasMeasurements()
     retrieved_measurement = measurement.get_measurement_result(str(msm_id))
 
+    print(f"working on measurement {msm_id}")
+
     formatted_measurement = format_traceroute_result(result=retrieved_measurement)
 
     with open(file=f"data/traceroute_measurement_results/{msm_id}.json", mode='w') as f:
         json.dump(formatted_measurement, f, indent=4)
-
+    
 
 def retrieve_ping_measurement(msm_id): # WORKS FOR BOTH ONE-OFF AND ONGOING PING MEASUREMENTS
     measurement = RipeAtlasMeasurements()
     retrieved_measurement = measurement.get_measurement_result(str(msm_id))
 
+    print(f"working on measurement {msm_id}")
+
     formatted_measurement = format_ping_result(result=retrieved_measurement)
 
     with open(file=f"data/ping_measurement_results/{msm_id}.json", mode='w') as f:
         json.dump(formatted_measurement, f, indent=4)
+    
 
 
 
@@ -193,11 +201,12 @@ if __name__ == "__main__":
 
 
     # RUN THIS WHEN READY TO RETRIEVE THE MEASUREMENTS
-    
+
     # RETRIEVE NEW PING MEASUREMENTS
-    for msm_id in ping_old_ongoing_msm_ids:
-        retrieve_ping_measurement(msm_id)
+    # for msm_id in ping_new_ongoing_msm_ids:
+    #     retrieve_ping_measurement(msm_id)
 
     # RETRIEVE NEW TRACEROUTE MEASUREMENTS
     for msm_id in traceroute_new_msm_ids:
         retrieve_traceroute_measurement(msm_id)
+

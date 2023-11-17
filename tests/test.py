@@ -71,3 +71,4 @@ alaska_probes = [
 
 value_str = ','.join([str(list(probe.values())[0]) for probe in alaska_probes])
 print(value_str)
+print(len(alaska_probes))
