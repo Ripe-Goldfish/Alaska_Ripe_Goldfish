@@ -203,10 +203,10 @@ if __name__ == "__main__":
     # RUN THIS WHEN READY TO RETRIEVE THE MEASUREMENTS
 
     # RETRIEVE NEW PING MEASUREMENTS
-    # for msm_id in ping_new_ongoing_msm_ids:
-    #     retrieve_ping_measurement(msm_id)
+    for msm_id in ping_new_ongoing_msm_ids:
+        retrieve_ping_measurement(msm_id)
 
-    # RETRIEVE NEW TRACEROUTE MEASUREMENTS
-    for msm_id in traceroute_new_msm_ids:
-        retrieve_traceroute_measurement(msm_id)
+    # # RETRIEVE NEW TRACEROUTE MEASUREMENTS
+    # for msm_id in traceroute_new_msm_ids:
+    #     retrieve_traceroute_measurement(msm_id)
 

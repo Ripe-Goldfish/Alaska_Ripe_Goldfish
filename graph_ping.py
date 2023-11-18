@@ -1,5 +1,16 @@
 import plotly.express as px
 import pandas as pd
+import json
+
+def import_measurements(msm_id):
+    with open(f'data/ping_measurement_results/{msm_id}.json') as f:
+        data = json.load(f)
+
+    return data
+
+def create_plot():
+     pass
+
 
 # Sample data
 servers = ['Server 1', 'Server 2', 'Server 3', 'Server 4']
@@ -36,3 +47,31 @@ fig2.update_layout(
         ))
 
 fig2.show()
+
+if __name__ == "__main__":
+        
+        # probes used in measurements
+        traceroute_measurements = [
+            {63715139: "Sao Paulo"}, 
+            {63715140: "Santiago de Chile"}, 
+            {63715141 : "Quito"}, 
+            # {63715142 : "New York City"}, # ip-api thinks nyc is germany
+            {63715143 : "Montreal"}, 
+            {63715144 : "Cape Town"}, 
+            {63715145 : "Nairobi"}, 
+            {63715146 : "Berlin"}, 
+            {63715147 : "Moscow"}, 
+            {63715148 : "Khabarovsk"}, 
+            {63715149 : "Astana"}, 
+            {63715150 : "Tokyo"}, 
+            {63715151 : "Sydney"},
+            {63715152 : "Wellington"}, 
+            {63715153 : "Delhi"}, 
+            # {63715154 : "Singapore" } # not a success
+        ]
+
+        # for now, focus on creating one plot per traceroute measurement, every measurement will have 4 probes, 4 traces
+        for msm in traceroute_measurements:
+            (key,value), = msm.items()
+            data = import_measurements(msm_id = key)
+            create_plot(data)
