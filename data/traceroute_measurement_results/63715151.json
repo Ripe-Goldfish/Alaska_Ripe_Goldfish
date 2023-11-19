@@ -448,10 +448,10 @@
         "prb_id": 61868,
         "src_addr": "107.77.205.70",
         "src_info": {
-            "src_lat": 47.6137,
-            "src_long": -122.3104,
+            "src_lat": 61.1704,
+            "src_long": -149.88,
             "src_country": "US",
-            "src_city": "Seattle",
+            "src_city": "Anchorage",
             "src_isp": "AT&T Mobility LLC",
             "src_reverse": "mobile-107-77-205-70.mobile.att.net",
             "src_hosting": false
