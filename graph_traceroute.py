@@ -1,12 +1,40 @@
 import plotly.graph_objects as go
 import numpy as np
 import json
+import pandas as pd
+
+traceroute_measurements = [
+    {63715139: "Sao Paulo"}, 
+    {63715140: "Santiago de Chile"}, 
+    {63715141 : "Quito"}, 
+    # {63715142 : "New York City"}, # ip-api thinks nyc is germany
+    {63715143 : "Montreal"}, 
+    {63715144 : "Cape Town"}, 
+    {63715145 : "Nairobi"}, 
+    {63715146 : "Berlin"}, 
+    {63715147 : "Moscow"}, 
+    {63715148 : "Khabarovsk"}, 
+    {63715149 : "Astana"}, 
+    {63715150 : "Tokyo"}, 
+    {63715151 : "Sydney"},
+    {63715152 : "Wellington"}, 
+    {63715153 : "Delhi"}, 
+    # {63715154 : "Singapore" } # not a success
+]
+
 
 def import_measurements(msm_id):
     with open(f'data/traceroute_measurement_results/{msm_id}.json') as f:
         data = json.load(f)
-
     return data
+
+def create_dataframe():
+    data = []
+    for i in traceroute_measurements:
+        with open(f'data/traceroute_measurement_results/{list(i.keys())[0]}.json') as f:
+            data.extend(json.load(f))
+    return pd.DataFrame(data)
+
 
 
 def create_plot(data):
@@ -80,35 +108,7 @@ def create_plot(data):
             "yanchor" : "top"
         }
     )
-    
-    fig.show()
-    
+    return fig
 
-if __name__ == "__main__":
-        
-        # probes used in measurements
-        traceroute_measurements = [
-            {63715139: "Sao Paulo"}, 
-            {63715140: "Santiago de Chile"}, 
-            {63715141 : "Quito"}, 
-            # {63715142 : "New York City"}, # ip-api thinks nyc is germany
-            {63715143 : "Montreal"}, 
-            {63715144 : "Cape Town"}, 
-            {63715145 : "Nairobi"}, 
-            {63715146 : "Berlin"}, 
-            {63715147 : "Moscow"}, 
-            {63715148 : "Khabarovsk"}, 
-            {63715149 : "Astana"}, 
-            {63715150 : "Tokyo"}, 
-            {63715151 : "Sydney"},
-            {63715152 : "Wellington"}, 
-            {63715153 : "Delhi"}, 
-            # {63715154 : "Singapore" } # not a success
-        ]
 
-        # for now, focus on creating one plot per traceroute measurement, every measurement will have 4 probes, 4 traces
-        for msm in traceroute_measurements:
-            (key,value), = msm.items()
-            data = import_measurements(msm_id = key)
-            create_plot(data)
-
+print(create_dataframe().head())
