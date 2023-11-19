@@ -1,10 +1,11 @@
 from dash import Dash, html, dcc, Input, Output, State, dash_table, callback, callback_context
 import dash_bootstrap_components as dbc
 import pandas as pd
+from graph_traceroute import Graph_Traceroute
 
 app = Dash(name=__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
-PLOTLY_LOGO = "https://images.plot.ly/logo/new-branding/plotly-logomark.png"
+traceroute_graph = Graph_Traceroute()
 
 
 navbar = dbc.NavbarSimple(
@@ -26,33 +27,21 @@ navbar = dbc.NavbarSimple(
     fluid=True,
 )
 
-app.layout = html.Div([navbar,
-                       dcc.Graph(id="graph"),])
 
-@app.callback(
-    Output("graph", "figure"),
-    [Input("traceroute_button", "n_clicks"),
-     Input("ping_button", "n_clicks")],
+app.layout = dbc.Container(children=
+    [
+        navbar,  # Inspect this component for any layout constraints
+        dcc.Graph(
+            id="graph", 
+            figure=traceroute_graph.get_plot(),
+            style=dict(height="100%", width="100%")  # Ensure full width and height
+        )
+    ],
+    fluid=True,
+    style=dict(height="100vh", width="100vw")  
 )
-def update_graph(traceroute_button, ping_button):
-        # The context of the callback to determine which button was clicked
-    ctx = callback_context
 
-    # If no button has been clicked, return an empty graph or default graph
-    if not ctx.triggered:
-        return {}
 
-    # Identify which button was clicked
-    button_id = ctx.triggered[0]['prop_id'].split('.')[0]
-
-    if button_id == 'traceroute_button':
-        # Generate the graph for traceroute
-        return {}
-    elif button_id == 'ping_button':
-        # Generate the graph for ping
-        return {}
-
-    return { }  # Return an empty graph as default
  
 if __name__ == '__main__':
     app.run(debug=True)
