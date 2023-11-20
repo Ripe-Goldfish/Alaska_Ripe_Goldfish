@@ -1,5 +1,6 @@
 import plotly.graph_objects as go
 import numpy as np
+import pandas as pd
 import json
 
 def import_measurements(msm_id):
@@ -16,11 +17,15 @@ def create_plot(data):
         lat_list = []
         long_list = []
         ip_list = []
+        city_list = []
+        isp_list = []
 
         # add src info to lists
         lat_list.append(probe["src_info"]["src_lat"])
         long_list.append(probe["src_info"]["src_long"])
         ip_list.append(probe["src_addr"])
+        city_list.append(probe["src_info"]["src_city"])
+        isp_list.append(probe["src_info"]["src_isp"])
         
         # add hop info to lists
         for hop in probe["result"]:
@@ -29,19 +34,29 @@ def create_plot(data):
                 lat_list.append(hop["hop_info"]["hop_lat"])
                 long_list.append(hop["hop_info"]["hop_long"])
                 ip_list.append(hop["from"])
+                city_list.append(hop["hop_info"]["hop_city"])
+                isp_list.append(hop["hop_info"]["hop_isp"])
 
-
-        # add dst  info to lists
+        # add dst info to lists
         lat_list.append(probe["dst_info"]["dst_lat"])
         long_list.append(probe["dst_info"]["dst_long"])
         ip_list.append(probe["dst_addr"])
+        city_list.append(probe["dst_info"]["dst_city"])
+        isp_list.append(probe["dst_info"]["dst_isp"])
 
-        # math on crossing meridian
-        latitudes= np.array(lat_list)
-        longitudes= np.array(long_list)
-
-        # Math on longitude to cross 180-degree meridian
+        # math on longitude to cross 180-degree meridian
+        longitudes= np.array(long_list) # turn list into np array for np.diff
         diffs=np.diff(longitudes)
+
+        # create custom data dataframe
+        custom_data = {
+            'latitudes': lat_list,
+            'longitudes': long_list,
+            'ip': ip_list,
+            'cities': city_list,
+            'isp': isp_list
+        }
+        df = pd.DataFrame(custom_data)
 
         crossings_plusminus=np.where(diffs<=-180)[0]
         crossing_minusplus=np.where(diffs>180)[0]
@@ -54,20 +69,28 @@ def create_plot(data):
 
         # create trace for probe
         trace = go.Scattermapbox(
-            text = ip_list,
-            textposition='top right',
-            hoverinfo='none',
+            customdata = np.stack((df['latitudes'], df['longitudes'], df['ip'], df['cities'], df['isp']), axis=-1),
+            hovertemplate='<b>Latitude</b>: %{customdata[0]}<br>' +
+                          '<b>Longitude</b>: %{customdata[1]}<br>' +
+                          '<b>IP Address</b>: %{customdata[2]}<br>' +
+                          '<b>City</b>: %{customdata[3]}<br>' +
+                          '<b>ISP</b>: %{customdata[4]}<br>' +
+                          '<extra></extra>',
             name = probe["prb_id"],
             mode = "markers+lines+text",
+            lat = lat_list,
             lon = longitudes,
-            lat = latitudes,
             marker = {'size': 10}
         )
         # add the probe trace to the plot
         fig.add_trace(trace)
+        fig.update_layout(
+            title="Traceroutes to " + probe["dst_info"]["dst_city"],
+            title_font_family="Times New Roman"
+            )
     
     fig.update_layout(
-        margin ={'l':0,'t':0,'b':0,'r':0},
+        margin ={'l':30,'t':30,'b':30,'r':30},
         mapbox = {
             'style': "open-street-map",
             'center': {'lon': -153, 'lat': 63},
