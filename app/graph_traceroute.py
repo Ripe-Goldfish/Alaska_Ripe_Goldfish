@@ -107,9 +107,6 @@ class Graph_Traceroute:
         self.traceroute_hops_graph.data[0].visible = True
         self.traceroute_hops_graph.data[1].visible = True
 
-    def create_private_hop_graph(self):
-        pass
-
 
     def _create_plot(self):
         data = None
