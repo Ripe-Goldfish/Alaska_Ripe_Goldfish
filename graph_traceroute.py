@@ -235,8 +235,3 @@ class Graph_Traceroute:
         return self.trace_fig
     def get_df(self):
         return self.df
-
-
-
-
-
