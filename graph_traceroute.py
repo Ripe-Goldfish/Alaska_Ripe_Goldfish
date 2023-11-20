@@ -122,12 +122,14 @@ class Graph_Traceroute:
                 lat_list = []
                 long_list = []
                 ip_list = []
-
+                city_list = []
+                isp_list = []
                 # add src info to lists
                 lat_list.append(probe["src_info"]["src_lat"])
                 long_list.append(probe["src_info"]["src_long"])
                 ip_list.append(probe["src_addr"])
-                
+                city_list.append(probe["src_info"]["src_city"])
+                isp_list.append(probe["src_info"]["src_isp"])
                 # add hop info to lists
                 for hop in probe["result"]:
                     # if the hop was successful AND geolocation was successfully obtained, maybe rework this later
@@ -135,13 +137,15 @@ class Graph_Traceroute:
                         lat_list.append(hop["hop_info"]["hop_lat"])
                         long_list.append(hop["hop_info"]["hop_long"])
                         ip_list.append(hop["from"])
-
+                        city_list.append(hop["hop_info"]["hop_city"])
+                        isp_list.append(hop["hop_info"]["hop_isp"])
 
                 # add dst  info to lists
                 lat_list.append(probe["dst_info"]["dst_lat"])
                 long_list.append(probe["dst_info"]["dst_long"])
                 ip_list.append(probe["dst_addr"])
-
+                city_list.append(probe["dst_info"]["dst_city"])
+                isp_list.append(probe["dst_info"]["dst_isp"])
                 # math on crossing meridian
                 latitudes= np.array(lat_list)
                 longitudes= np.array(long_list)
@@ -157,10 +161,23 @@ class Graph_Traceroute:
 
                 for minusplus_crossing in crossing_minusplus:
                     longitudes[minusplus_crossing+1:]-=360
-
+                custom_data = {
+                    'latitudes': lat_list,
+                    'longitudes': long_list,
+                    'ip': ip_list,
+                    'cities': city_list,
+                    'isp': isp_list
+                }
+                df = pd.DataFrame(custom_data)
                 # create trace for probe
                 trace = go.Scattermapbox(
-                    text = ip_list,
+                    customdata = np.stack((df['latitudes'], df['longitudes'], df['ip'], df['cities'], df['isp']), axis=-1),
+                    hovertemplate='<b>Latitude</b>: %{customdata[0]}<br>' +
+                                '<b>Longitude</b>: %{customdata[1]}<br>' +
+                                '<b>IP Address</b>: %{customdata[2]}<br>' +
+                                '<b>City</b>: %{customdata[3]}<br>' +
+                                '<b>ISP</b>: %{customdata[4]}<br>' +
+                                '<extra></extra>',
                     textposition='top right',
                     hoverinfo='none',
                     name = probe["prb_id"],
