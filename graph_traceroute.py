@@ -1,5 +1,4 @@
 import plotly.graph_objects as go
-import plotly.express as px
 import numpy as np
 import pandas as pd
 import json
@@ -78,7 +77,6 @@ def create_plot(data):
                           '<b>ISP</b>: %{customdata[4]}<br>' +
                           '<extra></extra>',
             name = probe["prb_id"],
-            #title = "Traceroutes to " + probe["dst_info"]["dst_city"],
             mode = "markers+lines+text",
             lat = lat_list,
             lon = longitudes,
@@ -86,9 +84,13 @@ def create_plot(data):
         )
         # add the probe trace to the plot
         fig.add_trace(trace)
+        fig.update_layout(
+            title="Traceroutes to " + probe["dst_info"]["dst_city"],
+            title_font_family="Times New Roman"
+            )
     
     fig.update_layout(
-        margin ={'l':0,'t':0,'b':0,'r':0},
+        margin ={'l':30,'t':30,'b':30,'r':30},
         mapbox = {
             'style': "open-street-map",
             'center': {'lon': -153, 'lat': 63},
