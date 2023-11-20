@@ -34,11 +34,14 @@ app.layout = dbc.Container(children=
         dcc.Graph(
             id="graph", 
             figure=traceroute_graph.get_plot(),
-            style=dict(height="100%", width="100%")  # Ensure full width and height
+        ),
+        dcc.Graph(
+            id="graph2",
+            figure=traceroute_graph.traceroute_hops_graph,
         )
     ],
     fluid=True,
-    style=dict(height="100vh", width="100vw")  
+    style=dict(height="100%", width="100%")  
 )
 
 

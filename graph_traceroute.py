@@ -30,8 +30,10 @@ class Graph_Traceroute:
             # {63715154 : "Singapore" } # not a success
         ]
         self.df = self._create_dataframe()
-        self.fig = go.Figure()
+        self.trace_fig = go.Figure()
+        self.traceroute_hops_graph = go.Figure()
         self._create_plot()
+        self.create_hop_graph()
     
     def _create_dataframe(self):
         data = []
@@ -40,6 +42,74 @@ class Graph_Traceroute:
             data.extend(import_measurements(measurement_id))
         df = pd.DataFrame(data)
         return df
+
+
+    def create_hop_graph(self):
+        df = self.df # get the dataframe
+        df['total_hops'] = df['result'].apply(lambda x: len(x))
+        df['total_private_hops'] = df['result'].apply(lambda x: sum([1 for hop in x if hop['hop_info']['hop_lat'] == -1]))
+        df['source']= df['src_info'].apply(lambda x: x['src_city'])
+        df['destination']= df['dst_info'].apply(lambda x: x['dst_city'])
+        df['x_label'] = df.apply(lambda x: f"Src: {x['source']}  Dst: {x['destination']}  Probe: {x['prb_id']}", axis=1)
+        grouped_data = df[['msm_id','prb_id','source','destination','total_hops']]
+        msm_ids = df['msm_id'].unique()
+        for msm_id in msm_ids:
+            filtered_df = df[df['msm_id'] == msm_id]
+            
+            # Trace for total_hops
+            self.traceroute_hops_graph.add_trace(
+                go.Bar(x=filtered_df['x_label'], y=filtered_df['total_hops'], name=f'Total Hops',
+                    visible=False, offsetgroup=1),
+            )
+            
+            # Trace for total_private_hops
+            self.traceroute_hops_graph.add_trace(
+                go.Bar(x=filtered_df['x_label'], y=filtered_df['total_private_hops'], name=f'Private Hops',
+                    visible=False, offsetgroup=2),
+            )
+
+        # Dropdown buttons for toggling visibility
+        dropdown_buttons = []
+        for msm_id in msm_ids:
+            button = dict(
+                label=f'{msm_id}',
+                method='update',
+                args=[{'visible': [msm_id == msm for msm in msm_ids] * 2},  # Multiply by 2 because there are two sets of traces per msm_id
+                    {'title': f'Data for MSM ID: {msm_id}'}]
+            )
+            dropdown_buttons.append(button)
+
+        self.traceroute_hops_graph.update_layout(
+                updatemenus=[
+                dict(buttons= dropdown_buttons,
+                     visible=False,
+                    direction= "down",
+                    showactive=False,
+                    xanchor="left",
+                    yanchor="top",
+                    x=0,
+                    y=1,
+                    bgcolor = 'rgba(255, 255, 255, 0.5)',
+                    bordercolor = 'rgba(255, 255, 255, 0.5)',
+                    font=dict(color="white", size=11),
+                    )
+            ],
+            paper_bgcolor='black',   # Sets the background color for the entire figure
+            plot_bgcolor='black',    # Sets the background color for the plot area
+            font_color='white', 
+            title='Hops and Private Hops per Traceroute Measurement',
+            title_x=0.5,
+            xaxis_type='category',
+            barmode='group'  # Grouped bar mode
+        )
+
+        # Show first set of traces by default
+        self.traceroute_hops_graph.data[0].visible = True
+        self.traceroute_hops_graph.data[1].visible = True
+
+    def create_private_hop_graph(self):
+        pass
+
 
     def _create_plot(self):
         data = None
@@ -104,7 +174,7 @@ class Graph_Traceroute:
                     visible=False
                 )
                 # add the probe trace to the plot
-                self.fig.add_trace(trace)
+                self.trace_fig.add_trace(trace)
                 traces_by_measurement_id[id_num].append(trace)
             
         dropdown_options = []
@@ -112,11 +182,11 @@ class Graph_Traceroute:
             option = dict(
                 label=str(measurement_id),
                 method='update',
-                args=[{'visible': [t in traces for t in self.fig.data]}]  # Set visibility based on whether the trace belongs to the selected measurement ID
+                args=[{'visible': [t in traces for t in self.trace_fig.data]}]  # Set visibility based on whether the trace belongs to the selected measurement ID
             )
             dropdown_options.append(option)
 
-        self.fig.update_layout(
+        self.trace_fig.update_layout(
             updatemenus=[
                 dict(buttons= dropdown_options,
                     direction= "down",
@@ -143,10 +213,16 @@ class Graph_Traceroute:
                 "yanchor" : "top"
             }
             )
+        self.trace_fig.data[0].visible = True
+        self.trace_fig.data[1].visible = True
+        self.trace_fig.data[2].visible = True
+        self.trace_fig.data[3].visible = True
     def get_plot(self):
-        return self.fig
+        return self.trace_fig
     def get_df(self):
         return self.df
+
+
 
 
 
