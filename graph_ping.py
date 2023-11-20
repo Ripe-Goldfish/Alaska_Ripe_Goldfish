@@ -83,6 +83,7 @@ def create_urbanAK_bar_graph(ping_msm_ids, ping_dsts):
 
 def extract_heatmap_data(msm_data):
     # get all night, morning, afternoon, evening rtts averaged
+    
     pass
 
 # squares heatmap
@@ -169,7 +170,4 @@ if __name__ == "__main__":
 
     # heatmap TODO
     for msm_id in ping_msm_ids:
-
         create_heatmap(msm_id)
-
-
