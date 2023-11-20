@@ -58,13 +58,13 @@ class Graph_Traceroute:
             
             # Trace for total_hops
             self.traceroute_hops_graph.add_trace(
-                go.Bar(x=filtered_df['x_label'], y=filtered_df['total_hops'], name=f'Total Hops',
+                go.Bar(x=filtered_df['x_label'], y=filtered_df['total_hops'], name=f'Total Hops for {msm_id}',
                     visible=False, offsetgroup=1),
             )
             
             # Trace for total_private_hops
             self.traceroute_hops_graph.add_trace(
-                go.Bar(x=filtered_df['x_label'], y=filtered_df['total_private_hops'], name=f'Private Hops',
+                go.Bar(x=filtered_df['x_label'], y=filtered_df['total_private_hops'], name=f'Private Hops for {msm_id}',
                     visible=False, offsetgroup=2),
             )
 
@@ -180,7 +180,7 @@ class Graph_Traceroute:
                                 '<extra></extra>',
                     textposition='top right',
                     hoverinfo='none',
-                    name = probe["prb_id"],
+                    name = probe["msm_id"],
                     mode = "markers+lines+text",
                     lon = longitudes,
                     lat = latitudes,
@@ -235,3 +235,12 @@ class Graph_Traceroute:
         return self.trace_fig
     def get_df(self):
         return self.df
+    
+    def update_trace_fig(self, msm_id):
+        for trace in self.trace_fig.data:
+            trace.visible = (int(trace.name) == int(msm_id))
+
+    def update_hops_graph(self, msm_id):
+        for i in range(0, len(self.traceroute_hops_graph.data), 2):
+            self.traceroute_hops_graph.data[i].visible = (self.traceroute_hops_graph.data[i].name == f'Total Hops for {msm_id}')
+            self.traceroute_hops_graph.data[i+1].visible = (self.traceroute_hops_graph.data[i+1].name == f'Private Hops for {msm_id}')
