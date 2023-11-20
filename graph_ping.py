@@ -81,8 +81,21 @@ def create_urbanAK_bar_graph(ping_msm_ids, ping_dsts):
     fig.show()
 
 
+def extract_heatmap_data(msm_data):
+    # get all night, morning, afternoon, evening rtts averaged
+    pass
+
 # squares heatmap
 def create_heatmap(msm_id):
+    msm_data = import_measurements(msm_id)
+    heatmap_data = extract_heatmap_data(msm_data)
+
+    x = ['Morning', 'Afternoon', 'Evening', 'Night']
+    y = ['11/15', '11/16', '11/17', '11/18', '11/19', '11/20']
+    # night: 0:00 - 6:00
+    # morngin: 6:00 - 12:00
+    # afternoon: 12:00 - 17:00
+    # evning: 17:00 - 22:00
     pass
 
 
