@@ -231,6 +231,7 @@ class Graph_Traceroute:
         self.trace_fig.data[1].visible = True
         self.trace_fig.data[2].visible = True
         self.trace_fig.data[3].visible = True
+        
     def get_plot(self):
         return self.trace_fig
     def get_df(self):

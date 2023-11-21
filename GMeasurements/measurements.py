@@ -265,15 +265,3 @@ class RipeAtlasMeasurements():
             probes_list.append(probe_data)
         return probes_list
     
-
-# create_measurement = RipeAtlasMeasurements("4001f1c2-f49d-4727-85f6-62322b76eaac")
-
-
-# measurement = create_measurement.get_measurement_result("62390085")
-# measurement2 = create_measurement.get_generic_measurement("62390085")
-
-
-# mdf = pd.DataFrame(measurement)
-
-# print(mdf.head())
-# mdf.to_csv("test.csv",mode='w',index=False)

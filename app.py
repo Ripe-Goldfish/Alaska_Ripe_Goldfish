@@ -2,10 +2,12 @@ from dash import Dash, html, dcc, Input, Output, State, dash_table, callback, ca
 import dash_bootstrap_components as dbc
 import pandas as pd
 from graph_traceroute import Graph_Traceroute
+from graph_ping import Graph_Ping
 
 app = Dash(name=__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 traceroute_graph = Graph_Traceroute()
+ping_graph = Graph_Ping()
 
 
 navbar = dbc.NavbarSimple(
@@ -71,10 +73,18 @@ def display_content(btn1, btn2):
                 figure=traceroute_graph.traceroute_hops_graph,
             )]
         elif button_id == "ping_button":
-            return html.Div([
-                html.H3('Content for Button 2'),
-                # Add more content here
-            ])
+            return[dcc.Graph(
+                id="map",
+                figure=ping_graph.create_scattermap()
+            ),
+            dcc.Graph(
+                id="bar_graph1",
+                figure=ping_graph.create_remoteAK_bar_graph()
+            ),
+            dcc.Graph(
+                id="bar_graph2",
+                figure=ping_graph.create_urbanAK_bar_graph()
+            )]
 
  
 if __name__ == '__main__':
