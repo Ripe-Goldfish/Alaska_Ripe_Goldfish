@@ -55,10 +55,12 @@ def display_content(btn1, btn2):
         return [        dcc.Graph(
             id="graph", 
             figure=traceroute_graph.get_plot(),
+            style={'width': '90vw', 'height': '90vh'}
         ),
         dcc.Graph(
             id="graph2",
             figure=traceroute_graph.traceroute_hops_graph,
+            style={'width': '90vw', 'height': '90vh'}
         )]
     else:
         button_id = ctx.triggered[0]['prop_id'].split('.')[0]
@@ -67,23 +69,29 @@ def display_content(btn1, btn2):
             return [        dcc.Graph(
                 id="graph", 
                 figure=traceroute_graph.get_plot(),
+                style={'width': '90vw', 'height': '90vh'}
             ),
             dcc.Graph(
                 id="graph2",
                 figure=traceroute_graph.traceroute_hops_graph,
+                style={'width': '90vw', 'height': '90vh'}
             )]
         elif button_id == "ping_button":
             return[dcc.Graph(
                 id="map",
-                figure=ping_graph.create_scattermap()
+                figure=ping_graph.create_scattermap(),
+                style={'width': '90vw', 'height': '90vh'}
             ),
             dcc.Graph(
                 id="bar_graph1",
-                figure=ping_graph.create_remoteAK_bar_graph()
+                figure=ping_graph.create_remoteAK_bar_graph(),
+                style={'width': '90vw', 'height': '90vh'}
             ),
             dcc.Graph(
                 id="bar_graph2",
-                figure=ping_graph.create_urbanAK_bar_graph()
+                figure=ping_graph.create_urbanAK_bar_graph(),
+                style={'width': '90vw', 'height': '90vh'}
+                
             )]
 
  
